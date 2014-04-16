@@ -63,18 +63,19 @@ def substitute(d1, d2):
             if s:
                 for match_key in s:
                     if match_key in params:
-                        d1[k] = d1[k].replace('{'+ match_key + '}', d2[match_key])
+                        d1[k] = d1[k].replace('{' + match_key + '}', d2[match_key])
     return d1
 
 
 def treefy(d1, d2):
     keys = set(d2)
     for k, v in d1.items():
-        if v in keys:
-            d1[k] = d2[v]
-            continue
         if isinstance(v, dict):
             d1[k] = treefy(v, d2)
+            continue
+        if hasattr(v, '__hash__') and v in keys:
+            d1[k] = d2[v]
+            continue
     return d1
 
 

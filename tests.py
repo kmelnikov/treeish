@@ -1,5 +1,5 @@
 from nose.tools import ok_, eq_
-from treeish import join_right, join_left, substitute, treefy, construct_tree
+from treeish import join_right, join_left, substitute, treefy, construct_tree, join_with
 
 __author__ = 'kmelnikov'
 
@@ -107,6 +107,7 @@ def test_simple_tree():
         "Make base tree"
     )
 
+
 def test_simple_tree_from_list():
     d1 = {'a': 'sub_tree'}
     d2 = {'sub_tree': {'d': 1}}
@@ -114,4 +115,35 @@ def test_simple_tree_from_list():
         construct_tree(d1, d2, d2),
         {'a': {'d': 1}},
         "Make base tree"
+    )
+
+
+###### Test join with
+def test_simple_join_with():
+    d1 = {'a': 'sub_tree', 'b': 'hello'}
+    d2 = {'b': 'sub_tree', 'c': 'hello'}
+    eq_(
+        join_with(d1, lambda x, y: isinstance(y, str), d2),
+        {'a': d2, 'b': d2},
+        "Make complex tree if has common keys"
+    )
+
+
+def test_simple_negative_join_with():
+    d1 = {'a': 'sub_tree1', 'b': 'hello1'}
+    d2 = {'b': 'sub_tree', 'c': 'hello'}
+    eq_(
+        join_with(d1, lambda x, y: isinstance(y, str), d2),
+        d1,
+        "Not join different trees"
+    )
+
+
+def test_simple_join_with_complex_condition():
+    d1 = {'a': 'sub_tree', 'b': 'hello'}
+    d2 = {'b': 'sub_tree', 'c': 'hello'}
+    eq_(
+        join_with(d1, lambda x, y: x == 'b' and isinstance(y, str), d2),
+        {'a': d2, 'b': 'hello'},
+        "Not join different trees"
     )

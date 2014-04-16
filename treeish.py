@@ -85,8 +85,22 @@ def construct_tree(*karg):
     return res
 
 
+def join_with(d1, tp, *karg):
+    vals = list()
+
+    for d2 in karg:
+        vals.append((d2, [v for k, v in d2.items() if tp(k, v)]))
+
+    for k, v in d1.items():
+        for d2, values_in_dict in vals:
+            if v in values_in_dict:
+                d1[k] = d2
+    return d1
+
+
 if __name__ == "__main__":
-    d1 = {{'a'}: 'sub_tree'}
-    d2 = {'sub_tree': {'d': 1}}
-    print treefy(d1, d2),
+    d1 = {'a': 'sub_tree'}
+    d2 = {'b': 'sub_tree', 'c': 'hello'}
+
+    print join_with(d1, str, d2)
 

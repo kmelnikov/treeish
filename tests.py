@@ -1,5 +1,6 @@
 from nose.tools import ok_, eq_
-from treeish import join_right, join_left, substitute, treefy, construct_tree, join_with
+from treeish import join_right, join_left, substitute, treefy, construct_tree, join_with, invert, covert_with_schema, \
+    make_d, unfold_d
 
 __author__ = 'kmelnikov'
 
@@ -147,3 +148,48 @@ def test_simple_join_with_complex_condition():
         {'a': d2, 'b': 'hello'},
         "Not join different trees"
     )
+
+
+##### Invert
+
+def test_invert_basic():
+    d = {"a": "b", "c": "d"}
+    eq_(
+        invert(d),
+        {"b": "a", "d": "c"},
+        "Basic invert"
+    )
+
+
+#### Schema based conversion
+
+def test_basic_conversion():
+    d = {'a': 'b'}
+    s = {'a': 'to_e'}
+    eq_(
+        covert_with_schema(d, s),
+        {"to_e": "b"},
+        "Basic convert"
+    )
+
+
+#### Convert to dotted notation and back
+
+def test_base_case_doted():
+    d = {'a': {'b': 'c'}, 't': {'t': {'d': 'a'}}}
+    eq_(
+        make_d(d),
+        {'t.t.d': 'a', 'a.b': 'c'},
+        "Basic convert to dotted notation"
+    )
+
+
+def test_base_case_unfold():
+    d = {'t.t.d': 'a', 'a.b': 'c'}
+
+    eq_(
+        unfold_d(d),
+        {'a': {'b': 'c'}, 't': {'t': {'d': 'a'}}},
+        "Basic unfold to dotted notation"
+    )
+

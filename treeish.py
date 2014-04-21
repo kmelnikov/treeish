@@ -87,6 +87,17 @@ def construct_tree(*karg):
 
 
 def join_with(d1, tp, *karg):
+    """
+    Construct tree using d1 as a base. If tp(key,value) of some later dict in list returns true it was considered as a
+     candidate to join.
+
+    :param d1: base dict
+    :param tp: predicate to consider if the parir in dict should be considered as candidate to join. Usually some check
+    on type of value.
+    :param karg: list of dicts to get subtrees from
+
+    :return: Tree based on d1 dictionary
+    """
     vals = list()
 
     for d2 in karg:
@@ -99,9 +110,86 @@ def join_with(d1, tp, *karg):
     return d1
 
 
+def invert(d1):
+    """
+    Turn keys to values and visa versa.
+
+    :param d1: base dictionary
+    :return: inverted dictionary
+    """
+    return dict({(v, k) for k, v in d1.items()})
+
+
+def covert_with_schema(data, schema):
+    """
+    Get arbitrary dictionary and rename its keys according to schema.
+
+    @param data: data to convert
+    @param schema: contains info on how to form result dictionary
+    """
+    result = dict()
+    for key, value in data.items():
+        if schema.has_key(key):
+            # not checked
+            if '.' in schema[key]:
+                v = result
+                keys_list = schema[key].split('.')
+                for sub_key in keys_list[:-1]:
+                    if not v.has_key(sub_key):
+                        v[sub_key] = dict()
+                    v = v[sub_key]
+                v[keys_list[-1]] = data[key]
+            else:
+                result[schema[key]] = data[key]
+        else:
+            result[key] = data[key]
+    return result
+
+
+def only_with_keys(data, key_list):
+    """
+    Remove all keys that are not in @key_list
+    """
+    result = dict()
+    for key, value in data.items():
+        if key in key_list:
+            result[key] = data[key]
+    return result
+
+
+def make_d(d):
+    def add_key(dd, key):
+        return dict([(key + '.' + k, v) for k, v in dd.items()])
+
+    if not isinstance(d, dict):
+        return d
+    for k, v in d.items():
+        if isinstance(v, dict):
+            dd = make_d(v)
+            dd = add_key(dd, k)
+            del d[k]
+            d.update(dd)
+    return d
+
+
+def unfold_d(d):
+    def unfold(key_list, v):
+        if len(key_list) > 1:
+            return {key_list[0]: unfold(key_list[1:], v)}
+        else:
+            return {key_list[0]: v}
+
+    res = dict()
+    for k, v in d.items():
+        if '.' in k:
+            #todo: make update from bottom
+            res.update(unfold(k.split('.'), v))
+        else:
+            res[k] = v
+
+    return res
+
+
 if __name__ == "__main__":
-    d1 = {'a': 'sub_tree'}
-    d2 = {'b': 'sub_tree', 'c': 'hello'}
-
-    print join_with(d1, str, d2)
-
+    d = {'t.t.d': 'a.b', 't.t': 'a.b.c'}
+    print unfold_d(d)

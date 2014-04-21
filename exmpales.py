@@ -1,9 +1,9 @@
-from treeish import join_with
+from treeish import join_with, substitute
 
 __author__ = 'kmelnikov'
 
 
-def costruction_of_family_tree():
+def construction_of_family_tree():
     jones = {
         'father': "Sergey",
         'mather': "Irina",
@@ -23,5 +23,18 @@ def costruction_of_family_tree():
     )
 
 
+def latter_description():
+    latter = {
+        "Name": "Konstantin",
+        "Later": "Hello {Name},\n"
+                  "I'm a test latter for you.\n\n"
+                  "Kind Regards,\n"
+                  "{Name}\n"
+    }
+    print substitute(latter, latter)['Later']
+
+
+
 if __name__ == '__main__':
-    costruction_of_family_tree()
+    construction_of_family_tree()
+    latter_description()

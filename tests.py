@@ -150,7 +150,7 @@ def test_simple_join_with_complex_condition():
     )
 
 
-##### Invert
+# #### Invert
 
 def test_invert_basic():
     d = {"a": "b", "c": "d"}

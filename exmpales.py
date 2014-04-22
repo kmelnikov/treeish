@@ -27,12 +27,11 @@ def latter_description():
     latter = {
         "Name": "Konstantin",
         "Later": "Hello {Name},\n"
-                  "I'm a test latter for you.\n\n"
-                  "Kind Regards,\n"
-                  "{Name}\n"
+                 "I'm a test latter for you.\n\n"
+                 "Kind Regards,\n"
+                 "{Name}\n"
     }
     print substitute(latter, latter)['Later']
-
 
 
 if __name__ == '__main__':

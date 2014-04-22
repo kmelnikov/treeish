@@ -119,7 +119,7 @@ def test_simple_tree_from_list():
     )
 
 
-###### Test join with
+# ##### Test join with
 def test_simple_join_with():
     d1 = {'a': 'sub_tree', 'b': 'hello'}
     d2 = {'b': 'sub_tree', 'c': 'hello'}
@@ -190,6 +190,16 @@ def test_base_case_unfold():
     eq_(
         unfold_d(d),
         {'a': {'b': 'c'}, 't': {'t': {'d': 'a'}}},
+        "Basic unfold to dotted notation"
+    )
+
+
+def test_overlap_unfold():
+    d = {'t.t.d': 'a.b', 't.t.c': 'a.b.c'}
+
+    eq_(
+        unfold_d(d),
+        {'t': {'t': {'c': 'a.b.c', 'd': 'a.b'}}},
         "Basic unfold to dotted notation"
     )
 

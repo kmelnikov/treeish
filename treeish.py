@@ -179,11 +179,17 @@ def unfold_d(d):
         else:
             return {key_list[0]: v}
 
+    def recursive_update(d1, d2):
+        for k, v in d2.items():
+            if isinstance(v, dict) and k in d1 and isinstance(d1[k], dict):
+                recursive_update(d1[k], v)
+                continue
+            d1[k] = v
+
     res = dict()
     for k, v in d.items():
         if '.' in k:
-            #todo: make update from bottom
-            res.update(unfold(k.split('.'), v))
+            recursive_update(res, unfold(k.split('.'), v))
         else:
             res[k] = v
 
@@ -191,5 +197,5 @@ def unfold_d(d):
 
 
 if __name__ == "__main__":
-    d = {'t.t.d': 'a.b', 't.t': 'a.b.c'}
+    d = {'t.t.d': 'a.b', 't.t.c': 'a.b.c'}
     print unfold_d(d)

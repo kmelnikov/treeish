@@ -173,6 +173,38 @@ def test_basic_conversion():
     )
 
 
+def test_conversion_flip_fields():
+    d = {'a': 'b', 'c': 'd'}
+    s = {'a': 'c', 'c': 'a'}
+    eq_(
+        covert_with_schema(d, s),
+        {"c": "b", 'a': 'd'},
+        "Flip two fields"
+    )
+
+
+def test_hide_to_inner_dict():
+    d = {'a': 'b', 'c': 'd'}
+    s = {'a': 'c.a', 'c': 'c.c'}
+
+    eq_(
+        covert_with_schema(d, s),
+        {'c': {'a': 'b', 'c': 'd'}},
+        "Hide to inner dict"
+    )
+
+def test_catch_data_loose():
+    d = {'a': 'b', 'c': 'd'}
+    s = {'a': 'c.a', 'c.b': 'a'}
+
+
+    eq_(
+        covert_with_schema(d, s),
+        {'c': {'a': 'b', 'c': 'd'}},
+        "Hide to inner dict"
+    )
+
+
 #### Convert to dotted notation and back
 
 def test_base_case_doted():
@@ -185,21 +217,23 @@ def test_base_case_doted():
 
 
 def test_base_case_unfold():
-    d = {'t.t.d': 'a', 'a.b': 'c'}
+    d = {'a.b.c': 'd', 'e.f': 'g'}
 
     eq_(
         unfold_d(d),
-        {'a': {'b': 'c'}, 't': {'t': {'d': 'a'}}},
+        {'e': {'f': 'g'}, 'a': {'b': {'c': 'd'}}},
         "Basic unfold to dotted notation"
     )
 
 
 def test_overlap_unfold():
-    d = {'t.t.d': 'a.b', 't.t.c': 'a.b.c'}
+    d = {'t.t.a': 'b.c', 't.t.d': 'e.f.g'}
 
     eq_(
         unfold_d(d),
-        {'t': {'t': {'c': 'a.b.c', 'd': 'a.b'}}},
+        {'t': {'t': {'a': 'b.c', 'd': 'e.f.g'}}},
         "Basic unfold to dotted notation"
     )
 
+
+####

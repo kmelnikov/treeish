@@ -128,6 +128,10 @@ def invert(d1):
     return dict({(v, k) for k, v in d1.items()})
 
 
+class SchemaCleanData(Exception):
+    pass
+
+
 def covert_with_schema(data, schema):
     """
     Get arbitrary dictionary and rename its keys according to schema.
@@ -219,5 +223,7 @@ def unfold_d(d):
 
 
 if __name__ == "__main__":
-    d = {'t.t.d': 'a.b', 't.t.c': 'a.b.c'}
-    print unfold_d(d)
+    d = {'a': {'b': 'c'}}
+    s = {'a.b': 'd'}
+    print covert_with_schema(make_d(d), s)
+

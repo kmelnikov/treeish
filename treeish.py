@@ -68,6 +68,9 @@ def substitute(d1, d2):
 
 
 def treefy(d1, d2):
+    """
+    Construct complex dict from base @d1 by adding value from @d2
+    """
     keys = set(d2)
     for k, v in d1.items():
         if isinstance(v, dict):
@@ -80,6 +83,11 @@ def treefy(d1, d2):
 
 
 def construct_tree(*karg):
+    """
+    Get list of dictionaries and fold it with treefy function.
+    :param karg: list of dictionaries.
+    :return: complex dict with all values expanded
+    """
     res = karg[0]
     for d in karg[1:]:
         res = treefy(res, d)
@@ -142,22 +150,30 @@ def covert_with_schema(data, schema):
             else:
                 result[schema[key]] = data[key]
         else:
+            if key in result:
+                raise SchemaCleanData()
             result[key] = data[key]
     return result
 
 
-def only_with_keys(data, key_list):
+def only_with_keys(d, key_list):
     """
-    Remove all keys that are not in @key_list
+    Remove all keys from @d that are not in @key_list
     """
-    result = dict()
-    for key, value in data.items():
+    result = d()
+    for key, value in d.items():
         if key in key_list:
-            result[key] = data[key]
+            result[key] = d[key]
     return result
 
 
 def make_d(d):
+    """
+    Make simple one level dict from the one of depth n
+
+    :param d: dict which contains
+    :return: dict with only one level. all keys are folded to 'key1.key2.key3' notation
+    """
     def add_key(dd, key):
         return dict([(key + '.' + k, v) for k, v in dd.items()])
 
@@ -173,6 +189,12 @@ def make_d(d):
 
 
 def unfold_d(d):
+    """
+    Opposite to make_d function. Unfold dotted notation to initial complex dict.
+
+    :param d: dict with dotted notation
+    :return: complex dict
+    """
     def unfold(key_list, v):
         if len(key_list) > 1:
             return {key_list[0]: unfold(key_list[1:], v)}
